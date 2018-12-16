@@ -78,6 +78,7 @@ Again args is array with params:
     * duration
 
 Default values:
+
     * top = 0
     * left = 0
     * opacity = 1
@@ -120,6 +121,7 @@ Again args is array with params:
     * duration
 
 Default params:
+
     * top = 0
     * left = 0
     * opacity = 1
