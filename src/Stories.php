@@ -18,9 +18,9 @@ Class Stories {
     function __construct(array $args = array()) {
         // Default values for layout
         $defaults = array(
-	        "width" => 200, // Width of layout
-	        "height" => 200, // Height of layout
-	        "duration" => 1, // Duration of animation
+	        "width" => 720, // Width of layout
+	        "height" => 1280, // Height of layout
+	        "duration" => 5, // Duration of animation
 	        "fps" => 30 // Frame per second
 	    );
 
@@ -263,7 +263,7 @@ Class Stories {
         $this->clear();
 
         // Return result filename
-        return $fn;
+        return "{$hash}.mp4";
     }
 
     /**
