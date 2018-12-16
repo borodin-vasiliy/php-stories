@@ -1,11 +1,8 @@
 <?php
 
-ini_set('display_errors','On');
-error_reporting('E_ALL');
+use BorodinVasiliy\Stories;
 
-include("../../src/Stories.php");
-
-use BorodinVasiliy\stories;
+include('../../vendor/autoload.php');
 
 // We want to create stories with sizes 720x1280
 $time = time();
@@ -13,7 +10,7 @@ $stories_width = 720;
 $stories_height = 1280;
 
 // Create layout for animation with sides
-$stories = new \BorodinVasiliy\stories\Stories([
+$stories = new BorodinVasiliy\Stories\Stories([
         "width" => $stories_width,
         "height" => $stories_height,
         "duration" => 5 // Duration of the stories - 5 sec

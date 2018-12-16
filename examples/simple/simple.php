@@ -1,11 +1,11 @@
 <?php
 
-use BorodinVasiliy\stories;
+use BorodinVasiliy\Stories;
 
-include("../../src/Stories.php");
+include('../../vendor/autoload.php');
 
 // Create layout for animation
-$stories = new \BorodinVasiliy\stories\Stories([
+$stories = new BorodinVasiliy\Stories\Stories([
         "width" => 200,
         "height" => 400,
         "duration" => 2

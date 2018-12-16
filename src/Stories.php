@@ -1,6 +1,6 @@
 <?php
 
-namespace BorodinVasiliy\stories;
+namespace BorodinVasiliy\Stories;
 
 /**
  * @author Vasiliy Borodin
