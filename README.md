@@ -2,7 +2,7 @@ PHP Stories
 ==========
 
 Library for create stories using images, text and animations for them.
-This library create stories frame by frame and after that create video using ffmpeg. ffmpeg should be installed on your server
+This library create stories frame by frame and after that create video using ffmpeg. ffmpeg should be installed on your server!
 
 Quick Start
 -----------
@@ -15,7 +15,6 @@ Examples
 -----------
 
 On examples dir you can found 2 samples how to use this library, below i will show how to create stories.
-
 
 Create object of the library
 -----------
@@ -52,6 +51,7 @@ Add images to stories
 <?php
 
 $stories->addImage([
+    "src" => __DIR__."image/cat.jpg",
     /*params*/
 ]);
 
@@ -77,6 +77,14 @@ Again args is array with params:
     * scale
     * duration
 
+Default values:
+    * top = 0
+    * left = 0
+    * opacity = 1
+    * scale = 1
+    * z-index = 0
+    * start = 0 (on first frame of stories)
+    * end = calculated to not remove element from stories
 
 Add text to stories
 -----------
@@ -85,7 +93,8 @@ Add text to stories
 <?php
 
 $stories->addText([
-    /*params*/
+    "text" => "Hello world!",
+    /*other params*/
 ]);
 
 ?>
@@ -110,10 +119,17 @@ Again args is array with params:
     * opacity
     * duration
 
+Default params:
+    * top = 0
+    * left = 0
+    * opacity = 1
+    * start = 0
+    * end = calculated, like image
+
 Generate stories
 -----------
 
-When you add all elements to your stories and set animation, you reade for generate animation and result video.
+When you add all elements to your stories and set animation, you ready for generate animation and result video.
 
 ```php
 <?php
