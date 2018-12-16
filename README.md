@@ -79,13 +79,13 @@ Again args is array with params:
 
 Default values:
 
-    * top = 0
-    * left = 0
-    * opacity = 1
-    * scale = 1
-    * z-index = 0
-    * start = 0 (on first frame of stories)
-    * end = calculated to not remove element from stories
+* top = 0
+* left = 0
+* opacity = 1
+* scale = 1
+* z-index = 0
+* start = 0 (on first frame of stories)
+* end = calculated to not remove element from stories
 
 Add text to stories
 -----------
@@ -120,13 +120,13 @@ Again args is array with params:
     * opacity
     * duration
 
-Default params:
+Default values:
 
-    * top = 0
-    * left = 0
-    * opacity = 1
-    * start = 0
-    * end = calculated, like image
+* top = 0
+* left = 0
+* opacity = 1
+* start = 0
+* end = calculated, like image
 
 Generate stories
 -----------
