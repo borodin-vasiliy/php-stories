@@ -60,32 +60,40 @@ $stories->addImage([
 
 Again args is array with params:
 
-* src - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
-* top - position of image from top
-* left - position of image from left
-* z-index - like css z-index - at first on layer will be added elements with less z-index
-* start - second, when element will be added to video
-* end - second, when element should be removed from video
-* opacity - like css opacity - opacity of element 0 - 1
-* scale - scale of element, we dont have width and height params, just scale
-* animation - array of params for animation. This params is end point for same regular params.
-    That mean, params of image will be change from regular value to value that was set in animation array
-    (duration - how many second should be animated this element). Params for animation:
-    * left
-    * top
-    * opacity
-    * scale
-    * duration
+* "src" - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
+* "top" - position of image from top
+* "left" - position of image from left
+* "z-index" - like css z-index - at first on layer will be added elements with less z-index
+* "start" - second, when element will be added to video
+* "end" - second, when element should be removed from video
+* "opacity" - like css opacity - opacity of element [0 .. 1]
+* "scale" - scale of element, we dont have width and height params, just scale
+* "animation" - array of params for animation. This params is end point for same regular params.
 
-Default values:
+Animation
+-----------
 
-* top = 0
-* left = 0
-* opacity = 1
-* scale = 1
-* z-index = 0
-* start = 0 (on first frame of stories)
-* end = calculated to not remove element from stories
+Image and Text can be animated. Animation is move some param from regular value to animated value for animation duration time.
+Duration can be less then life-time of this element. That mean, element can be animated for 1 second, but will be showed for the whole stories-time.
+If some params not set in animation array, that mean this param is constant and not animated on result video.
+
+Params for animation:
+
+* "duration" - duration on animation
+* "left" - position from left
+* "top" - position from top
+* "opacity" - opacity [0 .. 1]
+* "scale" - scale of image
+
+Default values for image:
+
+* "top" = 0
+* "left" = 0
+* "opacity" = 1
+* "scale" = 1
+* "z-index" = 0
+* "start" = 0 (on first frame of stories)
+* "end" = calculated to not remove element from stories
 
 Add text to stories
 -----------
@@ -103,30 +111,30 @@ $stories->addText([
 
 Again args is array with params:
 
-* text - Text, that you wanna add
-* font - path to font .ttf file
-* font-size - like css font-size
-* color - like css color
-* width - not required, if you use it, text will be automatically splitet to lines with setted width
-* top - position from top
-* left - position from left
-* z-index - like z-index
-* start - second when text should be to stories
-* end - second when text should be removed from stories
-* opacity - like css opacity
-* animation - array of params for animation, like with image. Params for animations:
-    * left
-    * top
-    * opacity
-    * duration
+* "text" - Text, that you wanna add
+* "font" - path to font .ttf file
+* "font-size" - like css font-size
+* "color" - like css color
+* "width" - not required, if you use it, text will be automatically splitet to lines with setted width
+* "top" - position from top
+* "left" - position from left
+* "z-index" - like z-index
+* "start" - second when text should be to stories
+* "end" - second when text should be removed from stories
+* "opacity" - like css opacity
+* "animation" - array of params for animation, like with image. Params for animations, all same like for image (but text dont have scale):
+    * "left"
+    * "top"
+    * "opacity"
+    * "duration"
 
 Default values:
 
-* top = 0
-* left = 0
-* opacity = 1
-* start = 0
-* end = calculated, like image
+* "top" = 0
+* "left" = 0
+* "opacity" = 1
+* "start" = 0
+* "end" = calculated, like image
 
 Generate stories
 -----------
