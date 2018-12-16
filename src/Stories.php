@@ -5,7 +5,7 @@ namespace BorodinVasiliy\Stories;
 /**
  * @author Vasiliy Borodin
  * Date: 17.11.2018
- * Git: https://github.com/BorodinVasiliy/php-stories
+ * Git: https://github.com/borodin-vasiliy/php-stories
  */
 
 Class Stories {
