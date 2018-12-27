@@ -467,7 +467,7 @@ Class Stories {
         }
 
         // Now we can create video from frames using ffmpeg
-        //exec("ffmpeg -r {$this->fps} -y -i '{$dir}/{$hash}-%07d.jpg' '{$dir}/{$hash}.mp4'");
+        exec("ffmpeg -r {$this->fps} -y -i '{$dir}/{$hash}-%07d.jpg' '{$dir}/{$hash}.mp4'");
         if ($this->music) {
             exec("ffmpeg -i '{$dir}/{$hash}.mp4' -i '{$this->music}' '{$dir}/{$hash}_music.mp4'");
             unlink("{$dir}/{$hash}.mp4");
@@ -476,7 +476,7 @@ Class Stories {
         }
 
         // Delete generated frame files
-        //$this->clear($generated_frames);
+        $this->clear($generated_frames);
 
         // Return result filename
         return "{$hash}.mp4";

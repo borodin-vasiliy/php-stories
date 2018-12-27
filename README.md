@@ -1,7 +1,7 @@
 PHP Stories
 ==========
 
-PHP-Library for create stories using images, text and animations for them. Dependence of the GD-library.
+PHP-Library for create video-stories (MP4) using images, text and animations for them. Dependence of the GD-library.
 This library create stories frame by frame and after that create video using ffmpeg. ffmpeg should be installed on your server!
 
 Quick Start
@@ -178,4 +178,7 @@ $file_hash = $stories->generate(__DIR__."/tmp");
 ?>
 ```
 
-As arg of function - path to temporary dir, where will be saved frames and result video-file. As result of method generate() you will receive filename of result video in temporary dir. Generated frames will be automatically removed.
+As arg of function - path to temporary dir, where will be saved frames and result video-file (MP4). As result of method generate() you will receive filename of result video in temporary dir. Generated frames will be automatically removed.
+
+Sample of stories
+-----------
