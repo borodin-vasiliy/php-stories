@@ -5,7 +5,7 @@ use BorodinVasiliy\Stories;
 include('../../vendor/autoload.php');
 
 // Create layout for animation
-$stories = new BorodinVasiliy\Stories\Stories([
+$stories = new Stories([
         "width" => 200,
         "height" => 400,
         "duration" => 2

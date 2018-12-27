@@ -1,11 +1,14 @@
 {
 	"name": "borodin-vasiliy/php-stories",
-	"description": "Library for create stories using images, text and animation",
+	"description": "PHP-Library for create stories using images, text and animation. Use GD-Library",
 	"keywords": [
 		"stories",
-		"instagram",
-		"animation",
 		"video",
+		"animation",
+		"instagram",
+		"facebook",
+		"vkontakte",
+		"social network",
 		"generate stories",
 		"create stories",
 		"generate video",
@@ -24,7 +27,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"BorodinVasiliy\\Stories\\": "src/"
+			"BorodinVasiliy\\": "src/"
 		}
 	}
 }
