@@ -1,6 +1,6 @@
 {
 	"name": "borodin-vasiliy/php-stories",
-	"description": "PHP-Library for create video-stories (MP4) using images, text, other elements and animations. Use GD-Library",
+	"description": "PHP-Library for create stories using images, text and animation. Use GD-Library",
 	"keywords": [
 		"stories",
 		"video",
@@ -16,6 +16,7 @@
 		"generate animation",
 		"create animation"
 	],
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Vasily Borodin",

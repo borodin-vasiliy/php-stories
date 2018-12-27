@@ -5,7 +5,6 @@ use BorodinVasiliy\Stories;
 include('../../vendor/autoload.php');
 
 $dir = __DIR__;
-$dir = "/wamp64/www/examples/stories";
 
 // We want to create stories with sizes 720x1280
 $time = time();
