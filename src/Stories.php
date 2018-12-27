@@ -268,11 +268,8 @@ Class Stories {
                 $params["color"] = sscanf($params["color"], "#%02x%02x%02x");
 
                 // If width is setted, try to split text to lines
-                if (isset($params["width"])) {
-                    $symbol_width = $params["size"] * 0.4;
-                    $symbols_count = round($params["width"] / $symbol_width);
-                    $params["text"] = wordwrap($params["text"], $symbols_count, "\n", true);
-                }
+                if (isset($params["width"]))
+                    $params["text"] = $this->wrapText($params["size"], $params["path"], $params["text"], $params["width"]);
                 break;
             case "rectangle":
                 // Convert color to array
@@ -365,6 +362,41 @@ Class Stories {
                 $this->frames[$i][$last_object] = $tmpParam;
             }
         }
+    }
+
+
+    /**
+    * Wrap text if with is setted
+    * @param int $fontSize - size of text
+    * @param string $fontFace - path to font
+    * @param string $string - text to wrap
+    * @param int $width - width to wrap
+    */
+    private function wrapText ($fontSize, $fontFace, $string, $width) {
+        $ret = "";
+        $arr = explode(" ", $string);
+
+        foreach ( $arr as $word ){
+            $testboxWord = imagettfbbox($fontSize, 0, $fontFace, $word);
+
+            // Huge word larger than $width, we need to cut it internally until it fits the width
+            $len = strlen($word);
+            while ( $testboxWord[2] > $width && $len > 0) {
+                $word = substr($word, 0, $len);
+                $len--;
+                $testboxWord = imagettfbbox($fontSize, 0, $fontFace, $word);
+            }
+
+            $teststring = $ret.' '.$word;
+            $testboxString = imagettfbbox($fontSize, 0, $fontFace, $teststring);
+            if ( $testboxString[2] > $width ){
+                $ret.=($ret==""?"":"\n").$word;
+            } else {
+                $ret.=($ret==""?"":' ').$word;
+            }
+        }
+
+        return $ret;
     }
 
     /**
