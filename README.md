@@ -16,8 +16,7 @@ Examples
 
 On examples dir you can found 2 samples how to use this library, below i will show how to create stories.
 
-Create object of the library
------------
+### Create object of the library
 
 ```php
 <?php
@@ -44,8 +43,7 @@ All params are not required. If not set than, library will use default values 72
 
 Now your future stories is ready for adding some elements to the video. In current moment you can add image, text, rectangle, ellipse with animation for them.
 
-Add objects to stories
------------
+### Add objects to stories
 
 Library has methods for adding each type of objects. Every time args of method - array of params.
 All object-types has general params:
@@ -59,8 +57,7 @@ All object-types has general params:
 
 And objects has additional params for this type. Lets learn, how to add each type of object to video and with params we can use.
 
-Add images to stories
------------
+### Add images to stories
 
 ```php
 <?php
@@ -78,8 +75,7 @@ Additional params for images:
 * "path" - required - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
 * "scale" - scale of element, we dont have width and height params, just scale
 
-Add text to stories
------------
+### Add text to stories
 
 ```php
 <?php
@@ -107,8 +103,7 @@ Additional params for text:
     * "top" - offset from main text
     * "left" - offset from main text
 
-Add rectangle to stories
------------
+### Add rectangle to stories
 
 ```php
 <?php
@@ -128,8 +123,7 @@ Additional params for rectangle:
 * height - required - height of this rectangle
 * color - like css color of this rectangle
 
-Add ellipse to stories
------------
+### Add ellipse to stories
 
 ```php
 <?php
