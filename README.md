@@ -99,7 +99,6 @@ Additional params for text:
 * "width" - not required, if you use this param, text will be automatically splitet to lines with setted width
 * "shadow" - array of params, if you set them, this text will have shadow:
     * "color" - color of this shadow
-    * "opacity" - [0..1] - opacity of shadow
     * "top" - offset from main text
     * "left" - offset from main text
 
@@ -182,3 +181,5 @@ As arg of function - path to temporary dir, where will be saved frames and resul
 
 Sample of stories
 -----------
+
+<https://github.com/borodin-vasiliy/php-stories/tree/master/examples/stories/tmp/9b2a0d77f24779937e78f749329630ac.mp4>

@@ -44,7 +44,7 @@ Class Stories {
         if (!isset($args["path"])) {
             throw new \Exception("Param path is required. You can`t add image without path");
         }else{
-            if (is_file($args["path"]) && is_file("/".$args["path"])) {
+            if (!is_file($args["path"])) {
                 throw new \Exception("Image dont found on {$args['path']}");
             }
         }
@@ -80,7 +80,7 @@ Class Stories {
         if (!isset($args["path"])) {
             throw new \Exception("Param path is required. You can`t add text without path to font");
         }else{
-            if (is_file($args["path"]) && is_file("/".$args["path"])) {
+            if (!is_file($args["path"])) {
                 throw new \Exception("Font dont found on {$args['path']}");
             }
 
@@ -183,7 +183,7 @@ Class Stories {
     */
     public function addMusic($path) {
         // Check input params
-            if (is_file($path) && is_file("/".$path)) {
+            if (!is_file($path)) {
             $this->music = $path;
         }else{
             throw new \Exception("Audio-file dont found on {$path}");
