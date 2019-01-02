@@ -4,7 +4,7 @@ namespace BorodinVasiliy;
 
 /**
  * @author Vasiliy Borodin
- * Email: mail@tltin.ru
+ * Last update: 27.12.2018
  * Git: https://github.com/borodin-vasiliy/php-stories
  */
 
@@ -29,17 +29,6 @@ Class Stories {
         foreach (array_merge($defaults, $args) as $key => $value)
             $this->$key = $value;
 
-        // Default params for future objects
-        $this->default_params = [
-                "top" => 0, // Position from top
-                "left" => 0, // Position from left
-                "opacity" => 1, // Opacity of element
-                "rotate" => 0, // Rotate element degrees
-                "start" => 0, // Second, when this element should be added to layout
-                "end" => $this->duration, // Second, when this element should be removed from layout
-                "animation" => []
-            ];
-
         // Prepare empty frames
         $count_frames = $this->duration * $this->fps - 1;
         for ($i = 0; $i <= $count_frames; $i++)
@@ -63,13 +52,18 @@ Class Stories {
         // Default values for image
         $defaults = array(
             "type" => "image",
+	        "top" => 0, // Position from top
+            "left" => 0, // Position from left
+            "opacity" => 1, // Opacity of image
             "scale" => 1, // Scale of image
-	        "z-index" => count($this->objects) // Z-index of element
+	        "z-index" => count($this->objects), // Z-index of element
+            "start" => 0, // Second, when this element should be added to layout
+            "end" => $this->duration, // Second, when this element should be removed from layout
+            "animation" => []
 	    );
 
         // Merge default params and user params
-        $params = array_merge($this->default_params, $args);
-        $this->objects[] = array_merge($defaults, $params);
+        $this->objects[] = array_merge($defaults, $args);
 
         return $this;
     }
@@ -102,13 +96,17 @@ Class Stories {
         $defaults = array(
             "type" => "text",
             "color" => "#ffffff", // Font color
-            "align" => "left", // Aligment
-	        "z-index" => count($this->objects) // Z-index of element
+	        "top" => 0, // Position from top
+            "left" => 0, // Position from left
+            "opacity" => 1, // Opacity of text
+	        "z-index" => count($this->objects), // Z-index of element
+            "start" => 0, // Second, when this element should be shown
+            "end" => $this->duration, // Second, when this element should be hidded
+            "animation" => []
 	    );
 
         // Merge default params and user params
-        $params = array_merge($this->default_params, $args);
-        $this->objects[] = array_merge($defaults, $params);
+        $this->objects[] = array_merge($defaults, $args);
 
         return $this;
     }
@@ -129,14 +127,19 @@ Class Stories {
         $defaults = array(
             "type" => "rectangle",
             "color" => "#ffffff", // Font color
+            "top" => 0, // Position from top
+            "left" => 0, // Position from left
             "width" => 0, // Rectangle width
             "height" => 0, // Rectangle height
-            "z-index" => count($this->objects) // Z-index of element
+            "opacity" => 1, // Opacity of text
+            "z-index" => count($this->objects), // Z-index of element
+            "start" => 0, // Second, when this element should be shown
+            "end" => $this->duration, // Second, when this element should be hidded
+            "animation" => []
         );
 
         // Merge default params and user params
-        $params = array_merge($this->default_params, $args);
-        $this->objects[] = array_merge($defaults, $params);
+        $this->objects[] = array_merge($defaults, $args);
 
         return $this;
     }
@@ -157,14 +160,19 @@ Class Stories {
         $defaults = array(
             "type" => "ellipse",
             "color" => "#ffffff", // Font color
+            "top" => 0, // Position from top
+            "left" => 0, // Position from left
             "width" => 0, // Ellipse width
             "height" => 0, // Ellipse height
-            "z-index" => count($this->objects) // Z-index of element
+            "opacity" => 1, // Opacity of text
+            "z-index" => count($this->objects), // Z-index of element
+            "start" => 0, // Second, when this element should be shown
+            "end" => $this->duration, // Second, when this element should be hidded
+            "animation" => []
         );
 
         // Merge default params and user params
-        $params = array_merge($this->default_params, $args);
-        $this->objects[] = array_merge($defaults, $params);
+        $this->objects[] = array_merge($defaults, $args);
 
         return $this;
     }
@@ -199,6 +207,42 @@ Class Stories {
     }
 
     /**
+    * Add shadow for text as new text
+    * @param array $params - params of this shadow
+    */
+    private function addShadow(array $params = array()) {
+        // Clone shadowParams from params of current text
+        $shadowDefaults = array(
+            "color" => "#000000",
+            "top" => 1,
+            "left" => 1
+        );
+
+        $shadowParams = array_merge($shadowDefaults, $params);
+
+        $shadowParams["color"] = $params["shadow"]["color"];
+        $shadowParams["z-index"] -= 1;
+
+        $shadowParams["top"] += $params["shadow"]["top"];
+        $shadowParams["left"] += $params["shadow"]["left"];
+
+
+        foreach ($shadowParams["animation"] as $k => $animation) {
+            if (isset($shadowParams["animation"][$k]["top"])) {
+                $shadowParams["animation"][$k]["top"] += $params["shadow"]["top"];
+            }
+            if (isset($shadowParams["animation"][$k]["left"])) {
+                $shadowParams["animation"][$k]["left"] += $params["shadow"]["left"];
+            }
+        }
+
+        unset($shadowParams["shadow"]);
+
+        // Add shadow like a text
+        $this->addObject($shadowParams);
+    }
+
+    /**
     * Add element to array of frames
     * @param array $params - params of this element
     * @param int $frame_start - frame, when this element should be added to stories
@@ -213,22 +257,36 @@ Class Stories {
         unset($params["start"]);
         unset($params["end"]);
 
-        // Convert css-color to php
-        if (isset($params["color"]) && $params["color"] != "transparent")
-            $params["color"] = sscanf($params["color"], "#%02x%02x%02x");
+        // Prepare params depending on the object type
+        switch ($params["type"]) {
+            case "image":
+                // Get image info
+                list($image_width, $image_height, $image_type) = getimagesize($params["path"]);
+                break;
+            case "text":
+                // Convert color to array
+                $params["color"] = sscanf($params["color"], "#%02x%02x%02x");
 
-        // Get image info
-        if ($params["type"] == "image")
-            list($image_width, $image_height, $image_type) = getimagesize($params["path"]);
+                // If width is setted, try to split text to lines
+                if (isset($params["width"]))
+                    $params["text"] = $this->wrapText($params["size"], $params["path"], $params["text"], $params["width"]);
+                break;
+            case "rectangle":
+                // Convert color to array
+                $params["color"] = sscanf($params["color"], "#%02x%02x%02x");
+                break;
+            case "ellipse":
+                // Convert color to array
+                $params["color"] = sscanf($params["color"], "#%02x%02x%02x");
+                break;
+        }
 
         // Prepare animation start, duration and stop params
         $animations = [];
         foreach ($params["animation"] as $animation) {
             $animation["start"] = (!isset($animation["start"]) ? $frame_start : $animation["start"] * $this->fps);
-
             if (!isset($animation["duration"]))
                 $animation["duration"] = ($frame_end - $frame_start) / $this->fps;
-
             $animation["stop"] = $animation["start"] + $animation["duration"] * $this->fps;
 
             $animations[] = $animation;
@@ -260,11 +318,9 @@ Class Stories {
 
                 unset($this->frames[$i][$last_object]);
                 if ($i <= $animation["stop"] && $i != $frame_end) {
-                    // While element should be animated, change value of params
                     $tmpParam["top"] += round($animation["delta"]["top"] * ($i - $animation["start"]));
                     $tmpParam["left"] += round($animation["delta"]["left"] * ($i - $animation["start"]));
                     $tmpParam["opacity"] += $animation["delta"]["opacity"] * ($i - $animation["start"]);
-                    $tmpParam["rotate"] += $animation["delta"]["rotate"] * ($i - $animation["start"]);
 
                     if (isset($tmpParam["scale"]))
                         $tmpParam["scale"] += $animation["delta"]["scale"] * ($i - $animation["start"]);
@@ -282,7 +338,6 @@ Class Stories {
                         $tmpParam["height"] += round($animation["delta"]["height"] * ($i - $animation["start"]));
                     }
                 }else{
-                    // If animation finished - change object params to final point of animation
                     if (isset($animation["top"]))
                         $tmpParam["top"] = $animation["top"];
 
@@ -291,9 +346,6 @@ Class Stories {
 
                     if (isset($animation["opacity"]))
                         $tmpParam["opacity"] = $animation["opacity"];
-
-                    if (isset($animation["rotate"]))
-                        $tmpParam["rotate"] = $animation["rotate"];
 
                     if (isset($animation["scale"]))
                         $tmpParam["scale"] += $animation["delta"]["scale"] * ($animation["stop"] - $animation["start"]);
@@ -305,16 +357,46 @@ Class Stories {
                         if (isset($tmpParam["height"]))
                             $tmpParam["height"] = round($image_height * $tmpParam["scale"]);
                     }
-
-                    if ($params["type"] == "rectangle" || $params["type"] == "ellipse") {
-                        $tmpParam["width"] = (isset($animation["width"]) ? $animation["width"] : $tmpParam["width"]);
-                        $tmpParam["height"] = (isset($animation["height"]) ? $animation["height"] : $tmpParam["height"]);
-                    }
                 }
 
                 $this->frames[$i][$last_object] = $tmpParam;
             }
         }
+    }
+
+
+    /**
+    * Wrap text if with is setted
+    * @param int $fontSize - size of text
+    * @param string $fontFace - path to font
+    * @param string $string - text to wrap
+    * @param int $width - width to wrap
+    */
+    private function wrapText ($fontSize, $fontFace, $string, $width) {
+        $ret = "";
+        $arr = explode(" ", $string);
+
+        foreach ( $arr as $word ){
+            $testboxWord = imagettfbbox($fontSize, 0, $fontFace, $word);
+
+            // Huge word larger than $width, we need to cut it internally until it fits the width
+            $len = strlen($word);
+            while ( $testboxWord[2] > $width && $len > 0) {
+                $word = substr($word, 0, $len);
+                $len--;
+                $testboxWord = imagettfbbox($fontSize, 0, $fontFace, $word);
+            }
+
+            $teststring = $ret.' '.$word;
+            $testboxString = imagettfbbox($fontSize, 0, $fontFace, $teststring);
+            if ( $testboxString[2] > $width ){
+                $ret.=($ret==""?"":"\n").$word;
+            } else {
+                $ret.=($ret==""?"":' ').$word;
+            }
+        }
+
+        return $ret;
     }
 
     /**
@@ -331,29 +413,24 @@ Class Stories {
             "top" => 0,
             "left" => 0,
             "opacity" => 0,
-            "rotate" => 0,
             "scale" => 0,
             "width" => 0,
             "height" => 0
         ];
 
-        // If this element has animation params, recalculate delta params for it
+        // If this element has animate params, recalculate delta params for it
         if (isset($animation["top"])) {
-            $delta["top"] = round(($animation["top"] - $params["top"]) / ($this->fps * $animation["duration"]), 2);
+            $delta["top"] = round(($animation["top"] - $params["top"]) / ($this->fps * $animation["duration"]));
             $animation["top"] = $params["top"] + $delta["top"] * $this->fps * $animation["duration"];
         }
 
         if (isset($animation["left"])) {
-            $delta["left"] = round(($animation["left"] - $params["left"]) / ($this->fps * $animation["duration"]), 2);
+            $delta["left"] = round(($animation["left"] - $params["left"]) / ($this->fps * $animation["duration"]));
             $animation["left"] = $params["left"] + $delta["left"] * $this->fps * $animation["duration"];
         }
 
         if (isset($animation["opacity"])) {
             $delta["opacity"] = round(($animation["opacity"] - $params["opacity"]) / ($this->fps * $animation["duration"]), 4);
-        }
-
-        if (isset($animation["rotate"])) {
-            $delta["rotate"] = round(($animation["rotate"] - $params["rotate"]) / ($this->fps * $animation["duration"]), 2);
         }
 
         if (isset($animation["scale"])) {
@@ -374,92 +451,27 @@ Class Stories {
     }
 
     /**
-    * Wrap text if with is setted
-    * @param int $fontSize - size of text
-    * @param string $fontFace - path to font
-    * @param string $string - text to wrap
-    * @param int $width - width to wrap
-    */
-    private function wrapText($size, $path, $text, $width) {
-        $ret = "";
-        $lines = explode("\n", $text);
-
-        foreach ($lines as $line) {
-            $words = explode(" ", $line);
-            foreach ($words as $word) {
-                $testboxWord = imagettfbbox($size, 0, $path, $word);
-
-                $len = strlen($word);
-                while ($testboxWord[2] > $width && $len > 0) {
-                    $word = substr($word, 0, $len);
-                    $len--;
-                    $testboxWord = imagettfbbox($size, 0, $path, $word);
-                }
-
-                $teststring = $ret." ".$word;
-                $testboxString = imagettfbbox($size, 0, $path, $teststring);
-                if ($testboxString[2] > $width){
-                    $ret .= ($ret == "" ? "" : "\n").$word;
-                }else{
-                    $ret .= ($ret == "" ? "" : " ").$word;
-                }
-            }
-            $ret .= "\n";
-        }
-
-        return $ret;
-    }
-
-    /**
     * Add objects to array of frames
     */
     private function prepareObjects() {
-        // Prepare objects if its neaded
-        foreach ($this->objects as $o => $object) {
+        foreach ($this->objects as $object) {
             if ($object["type"] == "text") {
-                // Wrap text if it has width param
-                if (isset($object["width"])) {
-                    $object["text"] = $this->wrapText($object["size"], $object["path"], $object["text"], $object["width"]);
+                // Move top for sizes
+                $object["top"] += $object["size"];
+                foreach ($object["animation"] as $k => $animation) {
+                    if (isset($animation["top"])) {
+                        $object["animation"][$k]["top"] += $object["size"];
+                    }
                 }
 
-                $lines = explode("\n", $object["text"]);
-
-                $width = (isset($object["width"]) ? $object["width"] : $this->width);
-                foreach ($lines as $ln => $line) {
-                    if (!$line) continue;
-
-                    // Add each not empty line as object
-                    $tmpObject = array_merge([], $object);
-                    $box = imagettfbbox($tmpObject["size"], 0, $tmpObject["path"], $line);
-                    // If aligment != left, calculate how element should be moved
-                    switch ($tmpObject["align"]) {
-                        case "center":
-                            $left = round(($width - ($box[2] - $box[0])) / 2);
-                            break;
-                        case "right":
-                            $left = $width - ($box[2] - $box[0]);
-                            break;
-                        default:
-                            $left = 0;
-                            break;
-
-                    }
-                    $tmpObject["text"] = $line;
-                    $tmpObject["left"] += $left;
-                    $tmpObject["top"] += $ln * $tmpObject["size"];
-                    foreach ($tmpObject["animation"] as $k => $animation) {
-                        // Change animation params
-                        if (isset($animation["left"]))
-                            $tmpObject["animation"][$k]["left"] += $left;
-                        if (isset($animation["top"]))
-                            $tmpObject["animation"][$k]["top"] += $ln * $tmpObject["size"];
-                    }
-
-                    $this->addObject($tmpObject);
+                // Create shadow if it set
+                if (isset($object["shadow"])) {
+                    $this->addShadow($object);
+                    unset($object["shadow"]);
                 }
-            }else{
-                $this->addObject($object);
             }
+            // Add object to frames
+            $this->addObject($object);
         }
     }
 
@@ -496,7 +508,7 @@ Class Stories {
         }
 
         // Delete generated frame files
-        //$this->clear($generated_frames);
+        $this->clear($generated_frames);
 
         // Return result filename
         return "{$hash}.mp4";
@@ -532,8 +544,7 @@ Class Stories {
                 case "default":
                     throw new \Exception("Can add just png or jpeg image-type");
             }
-
-            // Add to array of used images
+            // And add to array of used images
             $this->images[$hash] = $image;
         }
 
@@ -548,6 +559,10 @@ Class Stories {
     private function generateFrame($objects) {
         // Create frame layout
         $image = imagecreatetruecolor($this->width, $this->height);
+        // Add transparent
+        $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        imagefill($image, 0, 0, $transparent);
+        imagesavealpha($image, true);
 
         foreach ($objects as $object) {
             // Add all objects to layout
@@ -589,11 +604,14 @@ Class Stories {
 
         // Create tmp layer
         $tmp = imagecreatetruecolor($wr_src, $hr_src);
+        // Add transparent
+        $transparent = imagecolorallocatealpha($tmp, 0, 0, 0, 127);
+        imagefill($tmp, 0, 0, $transparent);
+        imagesavealpha($tmp, true);
 
         imagecopyresampled($tmp, $src, 0, 0, 0, 0, $wr_src, $hr_src, $w_src, $h_src);
 
-        $this->imagecopymerge_alpha($image, $tmp, $object["left"], $object["top"], 0, 0, $object["opacity"], $object["rotate"]);
-
+        $this->imagecopymerge_alpha($image, $tmp, $object["left"], $object["top"], 0, 0, $wr_src, $hr_src, $object["opacity"]);
         // Destroy temporary image
         imagedestroy($tmp);
 
@@ -607,39 +625,17 @@ Class Stories {
     * @return resource image
     */
     private function generateText($image, $object) {
-        // Calculate text points
-        $box = imagettfbbox($object["size"], 0, $object["path"], $object["text"]);
-        $width = $box[0] + $box[2];
-        $height = -1 * ($box[5] - $box[1]);
-        $dx = $dy = 0;
-
-        if (isset($object["shadow"])) {
-            $dx = $object["shadow"]["left"];
-            $dy = $object["shadow"]["top"];
-            $width += $dx * 2;
-            $height += $dy * 2;
-        }
-
-        // Create tmp layer
-        $tmp = imagecreatetruecolor($width, $height);
+        // Create layer for font
+        $tmp = imagecreatetruecolor($this->width, $this->height);
         // Add transparent
         $transparent = imagecolorallocatealpha($tmp, 0, 0, 0, 127);
         imagefill($tmp, 0, 0, $transparent);
         imagesavealpha($tmp, true);
 
-        if (isset($object["shadow"])) {
-            // Create color for text shadow
-            $color = sscanf($object["shadow"]["color"], "#%02x%02x%02x");
-            $font_color = imagecolorallocate($tmp, $color[0], $color[1], $color[2]);
-            // Add text to image
-            imagettftext($tmp, $object["size"], 0, $object["shadow"]["left"] - $box[0] + $dx, $object["shadow"]["top"] - $box[7] + $dy, $font_color, $object["path"], $object["text"]);
-        }
-        // Create color for text
         $font_color = imagecolorallocate($tmp, $object["color"][0], $object["color"][1], $object["color"][2]);
-        imagettftext($tmp, $object["size"], 0, - $box[0] + $dx, - $box[7] + $dy, $font_color, $object["path"], $object["text"]);
+        imagettftext($tmp, $object["size"], 0, $object["left"], $object["top"], $font_color, $object["path"], $object["text"]);
 
-        $this->imagecopymerge_alpha($image, $tmp, $object["left"], $object["top"], 0, 0, $object["opacity"], $object["rotate"]);
-
+        $this->imagecopymerge_alpha($image, $tmp, 0, 0, 0, 0, $this->width, $this->height, $object["opacity"]);
         // Destroy temporary image
         imagedestroy($tmp);
 
@@ -653,35 +649,17 @@ Class Stories {
     * @return resource image
     */
     private function generateRectangle($image, $object) {
-        $width = $object["width"];
-        $height = $object["height"];
-        $thickness = 0;
+        // Create layer for font
+        $tmp = imagecreatetruecolor($this->width, $this->height);
+        // Add transparent
+        $transparent = imagecolorallocatealpha($tmp, 0, 0, 0, 127);
+        imagefill($tmp, 0, 0, $transparent);
+        imagesavealpha($tmp, true);
 
-        if (isset($object["border"])) {
-            $thickness = $object["border"]["thickness"];
-            $width += 2 * $thickness;
-            $height += 2 * $thickness;
-        }
+        $color = imagecolorallocate($tmp, $object["color"][0], $object["color"][1], $object["color"][2]);
+        imagefilledrectangle($tmp, $object["left"], $object["top"], $object["left"] + $object["width"], $object["top"] + $object["height"], $color);
 
-        // Create tmp layer
-        $tmp = imagecreatetruecolor($width, $height);
-
-        if (is_array($object["color"])) {
-            // Create color for object
-            $color = imagecolorallocate($tmp, $object["color"][0], $object["color"][1], $object["color"][2]);
-            // Add object
-            imagefilledrectangle($tmp, $thickness, $thickness, $thickness + $object["width"], $thickness + $object["height"], $color);
-        }
-
-        if (isset($object["border"])) {
-            $object["border"]["color"] = sscanf($object["border"]["color"], "#%02x%02x%02x");
-            $color = imagecolorallocate($tmp, $object["border"]["color"][0], $object["border"]["color"][1], $object["border"]["color"][2]);
-            imagesetthickness($tmp, $thickness);
-            imagerectangle($tmp, $thickness, $thickness, $thickness + $object["width"], $thickness + $object["height"], $color);
-        }
-
-        $this->imagecopymerge_alpha($image, $tmp, $object["left"] - $thickness, $object["top"] - $thickness, 0, 0, $object["opacity"], $object["rotate"]);
-
+        $this->imagecopymerge_alpha($image, $tmp, 0, 0, 0, 0, $this->width, $this->height, $object["opacity"]);
         // Destroy temporary image
         imagedestroy($tmp);
 
@@ -695,39 +673,17 @@ Class Stories {
     * @return resource image
     */
     private function generateEllipse($image, $object) {
-        $width = $object["width"];
-        $height = $object["height"];
-        $thickness = 0;
-
-        if (isset($object["border"])) {
-            $thickness = $object["border"]["thickness"];
-            $width += 2 * $thickness;
-            $height += 2 * $thickness;
-        }
-
-        // Create tmp layer
-        $tmp = imagecreatetruecolor($width, $height);
+        // Create layer for font
+        $tmp = imagecreatetruecolor($this->width, $this->height);
         // Add transparent
         $transparent = imagecolorallocatealpha($tmp, 0, 0, 0, 127);
         imagefill($tmp, 0, 0, $transparent);
         imagesavealpha($tmp, true);
 
-        if (is_array($object["color"])) {
-            // Create color for object
-            $color = imagecolorallocate($tmp, $object["color"][0], $object["color"][1], $object["color"][2]);
-            // Add object
-            imagefilledellipse($tmp, round($object["width"] / 2) + $thickness, round($object["height"] / 2) + $thickness, $object["width"], $object["height"], $color);
-        }
+        $color = imagecolorallocate($tmp, $object["color"][0], $object["color"][1], $object["color"][2]);
+        imagefilledellipse($tmp, $object["left"], $object["top"], $object["left"] + $object["width"], $object["top"] + $object["height"], $color);
 
-        if (isset($object["border"])) {
-            $object["border"]["color"] = sscanf($object["border"]["color"], "#%02x%02x%02x");
-            $color = imagecolorallocate($tmp, $object["border"]["color"][0], $object["border"]["color"][1], $object["border"]["color"][2]);
-            imagesetthickness($tmp, $thickness);
-            imagearc($tmp, round($object["width"] / 2) + $thickness, round($object["height"] / 2) + $thickness, $object["width"], $object["height"], 0, 360, $color);
-        }
-
-        $this->imagecopymerge_alpha($image, $tmp, $object["left"] - $thickness, $object["top"] - $thickness, 0, 0, $object["opacity"], $object["rotate"]);
-
+        $this->imagecopymerge_alpha($image, $tmp, 0, 0, 0, 0, $this->width, $this->height, $object["opacity"]);
         // Destroy temporary image
         imagedestroy($tmp);
 
@@ -752,33 +708,23 @@ Class Stories {
         }
     }
 
+
     /**
     * Function of imagecopymerge with alpha
     */
-    private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $opacity = 1, $rotate = 0, $color = 0){
-        $src_w = imagesx($src_im);
-        $src_h = imagesy($src_im);
-        if ($rotate) {
-            $transparent = imagecolorallocatealpha($src_im, 0, 0, 0, 127);
-
-            $src_im = imagerotate($src_im, $rotate, $transparent);
-            $dx = imagesx($src_im) - $src_w;
-            $dy = imagesy($src_im) - $src_h;
-        }else{
-            $dx = $dy = 0;
-        }
-
+    private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct){
         // Creating a cut resource
-        $cut = imagecreatetruecolor($src_w + $dx, $src_h + $dy);
+        $cut = imagecreatetruecolor($src_w, $src_h);
         // Copying relevant section from background to the cut resource
-        imagecopy($cut, $dst_im, 0, 0, $dst_x - round($dx / 2), $dst_y - round($dy / 2), $src_w + $dx, $src_h + $dy);
+        imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
         // Copying relevant section from watermark to the cut resource
-        imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w + $dx, $src_h + $dy);
+        imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
         // Insert cut resource to destination image
-        imagecopymerge($dst_im, $cut, $dst_x - round($dx / 2), $dst_y - round($dy / 2), 0, 0, $src_w + $dx, $src_h + $dy, round($opacity * 100));
+        imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, round($pct * 100));
         // Destroy temporary image
         imagedestroy($cut);
     }
+
 }
 
 ?>
