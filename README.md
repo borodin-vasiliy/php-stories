@@ -1,7 +1,7 @@
 PHP Stories
 ==========
 
-Library for create stories using images, text and animations for them.
+PHP-Library for create video-stories (MP4) using images, text and animations for them. Dependence of the GD-library.
 This library create stories frame by frame and after that create video using ffmpeg. ffmpeg should be installed on your server!
 
 Quick Start
@@ -16,15 +16,14 @@ Examples
 
 On examples dir you can found 2 samples how to use this library, below i will show how to create stories.
 
-Create object of the library
------------
+### Create object of the library
 
 ```php
 <?php
 
 use BorodinVasiliy\Stories;
 
-$stories = new BorodinVasiliy\Stories\Stories([
+$stories = new Stories([
         "width" => $stories_width,
         "height" => $stories_height,
         "duration" => $stories_duration
@@ -40,101 +39,130 @@ How you can see, args of library is array with some params. Which params you can
 * "duration" - duration of stories in seconds
 * "fps" - frame per second - how many frames will be created for each second of the video
 
-All params are not required, if not set them, library will use default values 720x1280, 5 seconds, 30 fps.
+All params are not required. If not set than, library will use default values 720x1280px, 5 seconds, 30 fps.
 
-Now your future stories is ready for adding some elements to the video. In current moment you can add images and text with animation for them.
+Now your future stories is ready for adding some elements to the video. In current moment you can add image, text, rectangle, ellipse with animation for them.
 
-Add images to stories
------------
+### Add objects to stories
+
+Library has methods for adding each type of objects. Every time args of method - array of params.
+All object-types has general params:
+
+* "top" - position of image from top
+* "left" - position of image from left
+* "opacity" - like css opacity - opacity of element [0 .. 1]
+* "z-index" - like css z-index - at first on layer will be added elements with less z-index
+* "start" - second, when element will be added to video
+* "end" - second, when element should be removed from video
+
+And objects has additional params for this type. Lets learn, how to add each type of object to video and with params we can use.
+
+### Add images to stories
 
 ```php
 <?php
 
 $stories->addImage([
-    "src" => __DIR__."image/cat.jpg",
+    "path" => __DIR__."image/cat.jpg",
     /*params*/
 ]);
 
 ?>
 ```
 
-Again args is array with params:
+Additional params for images:
 
-* "src" - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
-* "top" - position of image from top
-* "left" - position of image from left
-* "z-index" - like css z-index - at first on layer will be added elements with less z-index
-* "start" - second, when element will be added to video
-* "end" - second, when element should be removed from video
-* "opacity" - like css opacity - opacity of element [0 .. 1]
+* "path" - required - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
 * "scale" - scale of element, we dont have width and height params, just scale
-* "animation" - array of params for animation. This params is end point for same regular params.
 
-Animation
------------
-
-Image and Text can be animated. Animation is move some param from regular value to animated value for animation duration time.
-Duration can be less then life-time of this element. That mean, element can be animated for 1 second, but will be showed for the whole stories-time.
-If some params not set in animation array, that mean this param is constant and not animated on result video.
-
-Params for animation:
-
-* "duration" - duration on animation
-* "left" - position from left
-* "top" - position from top
-* "opacity" - opacity [0 .. 1]
-* "scale" - scale of image
-
-Default values for image:
-
-* "top" = 0
-* "left" = 0
-* "opacity" = 1
-* "scale" = 1
-* "z-index" = 0
-* "start" = 0 (on first frame of stories)
-* "end" = calculated to not remove element from stories
-
-Add text to stories
------------
+### Add text to stories
 
 ```php
 <?php
 
 $stories->addText([
     "text" => "Hello world!",
+    "path" => __DIR__."/fonts/helvetica.ttf",
+    "size" => 130,
     /*other params*/
 ]);
 
 ?>
 ```
 
-Again args is array with params:
+Additional params for text:
 
-* "text" - Text, that you wanna add
-* "font" - path to font .ttf file
-* "font-size" - like css font-size
-* "color" - like css color
-* "width" - not required, if you use it, text will be automatically splitet to lines with setted width
-* "top" - position from top
-* "left" - position from left
-* "z-index" - like z-index
-* "start" - second when text should be to stories
-* "end" - second when text should be removed from stories
-* "opacity" - like css opacity
-* "animation" - array of params for animation, like with image. Params for animations, all same like for image (but text dont have scale):
-    * "left"
-    * "top"
-    * "opacity"
-    * "duration"
+* "text" - required - Text, that you wanna add
+* "path" - required - path to font .ttf file
+* "size" - required - like css font-size
+* "color" - like css color, ex "#ffffff"
+* "width" - not required, if you use this param, text will be automatically splitet to lines with setted width
+* "shadow" - array of params, if you set them, this text will have shadow:
+    * "color" - color of this shadow
+    * "top" - offset from main text
+    * "left" - offset from main text
 
-Default values:
+### Add rectangle to stories
 
-* "top" = 0
-* "left" = 0
-* "opacity" = 1
-* "start" = 0
-* "end" = calculated, like image
+```php
+<?php
+
+$stories->addRectangle([
+    "width" => 100,
+    "height" => 100,
+    /*other params*/
+]);
+
+?>
+```
+
+Additional params for rectangle:
+
+* width - required - width of this rectangle
+* height - required - height of this rectangle
+* color - like css color of this rectangle
+
+### Add ellipse to stories
+
+```php
+<?php
+
+$stories->addEllipse([
+    "width" => 100,
+    "height" => 100,
+    /*other params*/
+]);
+
+?>
+```
+
+Additional params for ellipse:
+
+* width - required - width of this ellipse
+* height - required - height of this ellipse
+* color - like css color of this ellipse
+
+Animation
+-----------
+
+Each object on video can be animated. Animation is change some param from start-value to animated value for animation duration time. Count of animations not limited. Duration can be less then life-time of this element. That mean, element can be animated for 1 second, but will be showed for the whole stories-time.
+
+All types of objects has general params for animation:
+
+* "start" - Second, when this animation should start
+* "duration" - duration of animation (You can set or "duration", or "end" param)
+* "end" - Second, when this animation should be finished
+* "top" - To which position move this object
+* "left" - To which position move this object
+* "opacity" - To which opacity move this object
+
+And additional (just for this type):
+
+* "scale" - for images
+* "width" - for rectangle and ellipse
+* "height" - for rectangle and ellipse
+
+This library use Fluent Interface.
 
 Generate stories
 -----------
@@ -149,4 +177,9 @@ $file_hash = $stories->generate(__DIR__."/tmp");
 ?>
 ```
 
-As arg of function - path to temporary dir, where will be saved frames and result video-file. As result of method generate() you will receive filename of result video in temporary dir. Generated frames will be automatically removed.
+As arg of function - path to temporary dir, where will be saved frames and result video-file (MP4). As result of method generate() you will receive filename of result video in temporary dir. Generated frames will be automatically removed.
+
+Sample of stories
+-----------
+
+<https://github.com/borodin-vasiliy/php-stories/tree/master/examples/stories/tmp/9b2a0d77f24779937e78f749329630ac.mp4>
