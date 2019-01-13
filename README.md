@@ -171,9 +171,9 @@ This library use Fluent Interface. That mean, you add element, after that can ad
 <?php
 
 $stories->addImage([
-        // params
+        /* image params */
     ])->addAnimation([
-        // params
+        /* params for animation */
     ]);
 
 ?>
