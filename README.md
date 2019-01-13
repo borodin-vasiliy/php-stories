@@ -51,13 +51,14 @@ All object-types has general params:
 * "top" - position of image from top
 * "left" - position of image from left
 * "opacity" - like css opacity - opacity of element [0 .. 1]
+* "rotate" - rotation of element [0 .. 359]
 * "z-index" - like css z-index - at first on layer will be added elements with less z-index
 * "start" - second, when element will be added to video
 * "end" - second, when element should be removed from video
 
-And objects has additional params for this type. Lets learn, how to add each type of object to video and with params we can use.
+And objects has additional params for this type. Lets learn, how to add each type of object to video and which params we can use.
 
-### Add images to stories
+### Add image to stories
 
 ```php
 <?php
@@ -73,7 +74,7 @@ $stories->addImage([
 Additional params for images:
 
 * "path" - required - required param with path and filename of image, ex. __DIR__."image/cat.jpg"
-* "scale" - scale of element, we dont have width and height params, just scale
+* "scale" - 1 default - scale of element, we dont have width and height params, just scale
 
 ### Add text to stories
 
@@ -96,7 +97,8 @@ Additional params for text:
 * "path" - required - path to font .ttf file
 * "size" - required - like css font-size
 * "color" - like css color, ex "#ffffff"
-* "width" - not required, if you use this param, text will be automatically splitet to lines with setted width
+* "width" - not required, if you use this param, text will be automatically splited to lines with setted width
+* "align" - like css align [left, center, right]
 * "shadow" - array of params, if you set them, this text will have shadow:
     * "color" - color of this shadow
     * "top" - offset from main text
@@ -145,7 +147,7 @@ Additional params for ellipse:
 Animation
 -----------
 
-Each object on video can be animated. Animation is change some param from start-value to animated value for animation duration time. Count of animations not limited. Duration can be less then life-time of this element. That mean, element can be animated for 1 second, but will be showed for the whole stories-time.
+Each object on video can be animated. Animation is change some param from start-value to animated value. Count of animations not limited. Each animation has own duration. Duration can be less then life-time of this element. When animation is done, animated param will be set like final point.
 
 All types of objects has general params for animation:
 
@@ -155,6 +157,7 @@ All types of objects has general params for animation:
 * "top" - To which position move this object
 * "left" - To which position move this object
 * "opacity" - To which opacity move this object
+* "rotate" - Degree to rotate this element
 
 And additional (just for this type):
 
@@ -162,7 +165,19 @@ And additional (just for this type):
 * "width" - for rectangle and ellipse
 * "height" - for rectangle and ellipse
 
-This library use Fluent Interface.
+This library use Fluent Interface. That mean, you add element, after that can add animation for this element:
+
+```php
+<?php
+
+$stories->addImage([
+        // params
+    ])->addAnimation([
+        // params
+    ]);
+
+?>
+```
 
 Generate stories
 -----------
